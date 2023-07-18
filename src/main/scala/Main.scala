@@ -41,26 +41,29 @@ final class ReadyListener extends ListenerAdapter {
 
 final class MsgListener extends ListenerAdapter {
     override def onMessageReceived(event: MessageReceivedEvent): Unit = {
-        if event.getMessage().getContentRaw().equals("ping") then {
-            event.getChannel().sendMessage("pong!").queue()
-        } else if event.getMessage().getContentRaw().startsWith("pfp") then {
-            val id = event
-                .getMessage()
-                .getContentRaw()
-                .split(" ")
-                .lift(1)
-                .getOrElse(event.getAuthor().getId())
+        val content = event.getMessage().getContentRaw().split(" ")
+        content(0).toLowerCase() match {
+            case "ping" => event.getChannel().sendMessage("pong!").queue()
+            case "pfp" => {
+                val id = event
+                    .getMessage()
+                    .getContentRaw()
+                    .split(" ")
+                    .lift(1)
+                    .getOrElse(event.getAuthor().getId())
 
-            val target = event.getJDA().getUserById(id)
+                val target = event.getJDA().getUserById(id)
 
-            val url = target.getAvatarUrl() + "?size=4096"
-            val embed = EmbedBuilder()
-                .appendDescription("*Here's your pfp!*")
-                .setImage(url)
-                .setColor(0xce3a9b)
-                .build()
+                val url = target.getAvatarUrl() + "?size=4096"
+                val embed = EmbedBuilder()
+                    .appendDescription("*Here's your pfp!*")
+                    .setImage(url)
+                    .setColor(0xce3a9b)
+                    .build()
 
-            event.getChannel().sendMessageEmbeds(embed).queue()
+                event.getChannel().sendMessageEmbeds(embed).queue()
+            }
         }
+
     }
 }
