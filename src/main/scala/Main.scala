@@ -13,6 +13,7 @@ import java.util.Date
 
 val dotenv = Dotenv.load()
 val now = Instant.now()
+val prefix = "h?"
 
 object Main extends App {
     val jda: JDA = JDABuilder
@@ -52,7 +53,10 @@ final class MsgListener extends ListenerAdapter {
     override def onMessageReceived(event: MessageReceivedEvent): Unit = {
         if event.getAuthor().isBot() then return
         val content = event.getMessage().getContentRaw().split(" ").toSeq
-        content(0).toLowerCase() match {
+
+        if !content(0).startsWith(prefix) then return
+
+        content(0).toLowerCase().stripPrefix(prefix) match {
             case "ping" => event.getChannel().sendMessage("pong!").queue()
             case "pfp" => {
                 val id = event
