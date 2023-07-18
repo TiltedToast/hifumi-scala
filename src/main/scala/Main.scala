@@ -7,9 +7,12 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.entities.Message
+import java.time.{Duration, LocalDateTime, Instant}
+import java.text.SimpleDateFormat
+import java.util.Date
 
 val dotenv = Dotenv.load()
-val now = java.time.LocalDateTime.now()
+val now = Instant.now()
 
 object Main extends App {
     val jda: JDA = JDABuilder
@@ -30,18 +33,25 @@ object Main extends App {
 
 final class ReadyListener extends ListenerAdapter {
     override def onReady(event: ReadyEvent): Unit = {
-        val readyTime = java.time.LocalDateTime.now()
-        val timeDiff = java.time.Duration.between(now, readyTime)
+        val readyTime = Instant.now()
+        val timeDiff = Duration.between(now, readyTime).toMillis() / 1000.0
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+        val formatted = dateFormat.format(Date.from(readyTime))
+
         println()
-        println(s"Ready in ${timeDiff.toMillis()}ms")
-        println(s"Logged in as ${event.getJDA().getSelfUser().getAsTag()}")
+        println(s"Started up in $timeDiff seconds on $formatted")
+        println(s"Logged in as:")
+        println(event.getJDA().getSelfUser().getName())
+        println(event.getJDA().getSelfUser().getId())
+        println("------------------")
     }
 
 }
 
 final class MsgListener extends ListenerAdapter {
     override def onMessageReceived(event: MessageReceivedEvent): Unit = {
-        val content = event.getMessage().getContentRaw().split(" ")
+        if event.getAuthor().isBot() then return
+        val content = event.getMessage().getContentRaw().split(" ").toSeq
         content(0).toLowerCase() match {
             case "ping" => event.getChannel().sendMessage("pong!").queue()
             case "pfp" => {
@@ -63,7 +73,7 @@ final class MsgListener extends ListenerAdapter {
 
                 event.getChannel().sendMessageEmbeds(embed).queue()
             }
+            case _ => ()
         }
-
     }
 }
