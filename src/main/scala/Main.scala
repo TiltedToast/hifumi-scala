@@ -10,10 +10,12 @@ import net.dv8tion.jda.api.entities.Message
 import java.time.{Duration, LocalDateTime, Instant}
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.slf4j.LoggerFactory
 
 val dotenv = Dotenv.load()
 val now = Instant.now()
 val prefix = "h?"
+val logger = LoggerFactory.getLogger(Main.getClass())
 
 object Main extends App {
     val jda: JDA = JDABuilder
@@ -39,12 +41,11 @@ final class ReadyListener extends ListenerAdapter {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
         val formatted = dateFormat.format(Date.from(readyTime))
 
-        println()
-        println(s"Started up in $timeDiff seconds on $formatted")
-        println(s"Logged in as:")
-        println(event.getJDA().getSelfUser().getName())
-        println(event.getJDA().getSelfUser().getId())
-        println("------------------")
+        logger.info(s"Started up in $timeDiff seconds on $formatted")
+        logger.info(s"Logged in as:")
+        logger.info(event.getJDA().getSelfUser().getName())
+        logger.info(event.getJDA().getSelfUser().getId())
+        logger.info("------------------")
     }
 
 }
