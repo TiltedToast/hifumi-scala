@@ -18,7 +18,7 @@ val prefix = "h?"
 val logger = LoggerFactory.getLogger(Main.getClass())
 
 object Main extends App {
-    val jda: JDA = JDABuilder
+    val jda = JDABuilder
         .createDefault(dotenv.get("BOT_TOKEN"))
         .enableIntents(
           GatewayIntent.GUILD_MESSAGES,
@@ -60,16 +60,13 @@ final class MsgListener extends ListenerAdapter {
         content(0).toLowerCase().stripPrefix(prefix) match {
             case "ping" => event.getChannel().sendMessage("pong!").queue()
             case "pfp" => {
-                val id = event
-                    .getMessage()
-                    .getContentRaw()
-                    .split(" ")
+                val id = content
                     .lift(1)
                     .getOrElse(event.getAuthor().getId())
 
                 val target = event.getJDA().getUserById(id)
 
-                val url = target.getAvatarUrl() + "?size=4096"
+                val url = target.getEffectiveAvatarUrl() + "?size=4096"
                 val embed = EmbedBuilder()
                     .appendDescription("*Here's your pfp!*")
                     .setImage(url)
