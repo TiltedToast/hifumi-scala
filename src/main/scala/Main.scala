@@ -27,11 +27,11 @@ object Main extends App {
           GatewayIntent.MESSAGE_CONTENT
         )
         .build()
+    java.lang.Runtime.getRuntime().addShutdownHook(Thread(() => jda.shutdownNow()))
     jda.addEventListener(
       ReadyListener(),
       MsgListener()
     )
-    java.lang.Runtime.getRuntime().addShutdownHook(Thread(() => jda.shutdownNow()))
 }
 
 final class ReadyListener extends ListenerAdapter {
@@ -42,12 +42,11 @@ final class ReadyListener extends ListenerAdapter {
         val formatted = dateFormat.format(Date.from(readyTime))
 
         logger.info(s"Started up in $timeDiff seconds on $formatted")
-        logger.info(s"Logged in as:")
+        logger.info("Logged in as:")
         logger.info(event.getJDA().getSelfUser().getName())
         logger.info(event.getJDA().getSelfUser().getId())
         logger.info("------------------")
     }
-
 }
 
 final class MsgListener extends ListenerAdapter {
@@ -64,7 +63,7 @@ final class MsgListener extends ListenerAdapter {
                     .lift(1)
                     .getOrElse(event.getAuthor().getId())
 
-                val target = event.getJDA().getUserById(id)
+                val target = event.getJDA().retrieveUserById(id).complete()
 
                 val url = target.getEffectiveAvatarUrl() + "?size=4096"
                 val embed = EmbedBuilder()
