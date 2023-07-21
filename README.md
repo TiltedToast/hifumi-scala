@@ -22,7 +22,7 @@ java -jar target/scala-$SCALA_VERSION/hifumi.jar
 scala target/scala-$SCALA_VERSION/hifumi.jar
 ```
 
-# Development
+## Development
 
 ```bash
 sbt
